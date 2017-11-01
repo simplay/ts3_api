@@ -1,0 +1,26 @@
+require 'logger'
+require 'dotenv'
+Dotenv.load
+
+logger = Logger.new(ENV['LOG_PATH'] || STDOUT)
+
+require "ts3_api/version"
+require "ts3_api/server"
+
+module TS3API
+  def self.root
+    File.dirname __dir__
+  end
+
+  def self.log(message, level = :info)
+    logger.send(level, message)
+  end
+
+  def self.logger
+    @logger ||= Logger.new(log_path)
+  end
+
+  def self.log_path
+    ENV['LOG_PATH'] || STDOUT
+  end
+end

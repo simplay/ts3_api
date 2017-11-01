@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "ts3_api"
+require 'pry'
+
+def reload!
+  warn = $VERBOSE
+  $VERBOSE = nil
+  load 'lib/ts3_api.rb'
+  Dir['lib/ts3_api/**/*.rb'].each { |file| load file }
+  true
+ensure
+  $VERBOSE = warn
+  true
+end
+
+Pry.start TS3API

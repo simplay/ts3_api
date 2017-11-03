@@ -18,6 +18,7 @@ module TS3API
                 :socket
 
     DEFAULT_QUERY_PORT = 10011
+    DEFAULT_SID = "1".freeze
 
     ESCAPED_CHARACTERS = [
       { match: '\\\\', replacement: '\\' },
@@ -54,7 +55,7 @@ module TS3API
       end
     end
 
-    def login(sid: nil)
+    def login(sid: DEFAULT_SID)
       execute(
         'login', 
         client_login_name: ENV['QUERY_ADMIN_NAME'], 
@@ -70,7 +71,7 @@ module TS3API
 
     # @param sid [String] the server id, usually equals "1"
     def use(sid:)
-      execute('use', sid: '1') if sid
+      execute('use', sid: sid) if sid
       TS3API.log "Using sid = #{sid}"
     end
 

@@ -54,15 +54,25 @@ module TS3API
       end
     end
 
-    def login
+    def login(sid: nil)
       execute(
         'login', 
         client_login_name: ENV['QUERY_ADMIN_NAME'], 
         client_login_password: ENV['QUERY_ADMIN_PASSWORD']
       )
+      use(sid: sid) if sid
       TS3API.log 'Logged in to query server'
     end
 
+    def serverinfo
+      execute('serverinfo')
+    end
+
+    # @param sid [String] the server id, usually equals "1"
+    def use(sid:)
+      execute('use', sid: '1') if sid
+      TS3API.log "Using sid = #{sid}"
+    end
 
     # @param command [String]
     # @param params [Hash<Symbol, String>]
@@ -80,12 +90,12 @@ module TS3API
         break if response.index(' msg=')
       end
 
-      response
+      Response.new(response)
     end
 
     def logout
-      TS3API.log 'Loging out from query server.'
       execute('quit')
+      TS3API.log 'Loging out from query server.'
     end
 
     def disconnect

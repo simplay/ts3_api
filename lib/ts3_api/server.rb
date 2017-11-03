@@ -20,20 +20,6 @@ module TS3API
     DEFAULT_QUERY_PORT = 10011
     DEFAULT_SID = "1".freeze
 
-    ESCAPED_CHARACTERS = [
-      { match: '\\\\', replacement: '\\' },
-      { match: '\\/', replacement: '/' },
-      { match: '\\s', replacement: ' ' },
-      { match: '\\p', replacement: '|' },
-      { match: '\\a', replacement: '\a' },
-      { match: '\\b', replacement: '\b' },
-      { match: '\\f', replacement: '\f' },
-      { match: '\\n', replacement: '\n' },
-      { match: '\\r', replacement: '\r' },
-      { match: '\\t', replacement: '\t' },
-      { match: '\\v', replacement: '\v' }
-    ].freeze
-
     # @param ip [String] IP address of the server.
     #   By default "localhost".
     # @param port [Integer] port where the query admin
@@ -81,7 +67,7 @@ module TS3API
       command = params.inject(command) do |cmd, param|
         param_name = param[0]
         value = param[1]
-        cmd + " #{param_name}=#{encoded_param(value)}"
+        cmd + " #{param_name}=#{Decoder.new(value).decode}"
       end
       socket.puts(command)
 
@@ -103,18 +89,6 @@ module TS3API
       logout
       socket.close
       TS3API.log 'Connection to query server closed'
-    end
-
-    private
-
-    def encoded_param(param)
-      ESCAPED_CHARACTERS.each do |rule|
-        param = param.gsub(
-          rule[:match], 
-          rule[:replacement]
-        )
-      end
-      param
     end
   end
 end

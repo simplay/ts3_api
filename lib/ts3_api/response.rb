@@ -8,7 +8,8 @@ module TS3API
       splits = message.split(/\s/).reject(&:empty?)
       @attributes = splits.map do |split|
         key, value = split.split('=')
-        [key.to_sym, value || nil]
+        v = Decoder.new(value).decode
+        [key.to_sym, v || nil]
       end.to_h
     end
 

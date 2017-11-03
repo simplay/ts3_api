@@ -6,8 +6,10 @@ logger = Logger.new(ENV['LOG_PATH'] || STDOUT)
 
 require "ts3_api/version"
 require "ts3_api/server"
+require "ts3_api/connection"
 require "ts3_api/decoder"
 require "ts3_api/response"
+require "ts3_api/reader"
 
 module TS3API
   def self.root

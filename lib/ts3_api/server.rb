@@ -1,5 +1,3 @@
-require 'socket'
-
 module TS3API
   class ConnectionError < StandardError
     attr_reader :ip, :port
@@ -15,7 +13,8 @@ module TS3API
   class Server
     attr_reader :ip, 
                 :port,
-                :socket
+                :connection,
+                :server_responses
 
     DEFAULT_QUERY_PORT = 10011
     DEFAULT_SID = "1".freeze
@@ -27,12 +26,18 @@ module TS3API
     def initialize(ip: "localhost", port: DEFAULT_QUERY_PORT)
       @ip   = ip
       @port = port
+      @server_responses = []
     end
 
     def connect
       begin
-        @socket = TCPSocket.open(ip, port)
-        case socket.gets
+        @connection = Connection.new(ip: ip, port: port)
+        @reader = Reader.new(
+          ip: ip,
+          port: port,
+          queue: server_responses
+        )
+        case connection.get
         when /TS3/
           TS3API.log 'Connection to query server established'
         else
@@ -48,6 +53,7 @@ module TS3API
         client_login_password: ENV['QUERY_ADMIN_PASSWORD']
       )
       use(sid: sid) if sid
+      @reader.run
       TS3API.log 'Logged in to query server'
     end
 
@@ -69,11 +75,11 @@ module TS3API
         value = param[1]
         cmd + " #{param_name}=#{Decoder.new(value).decode}"
       end
-      socket.puts(command)
+      connection.send(command)
 
       response = ''
       loop do
-        response += socket.gets
+        response += connection.get
         break if response.index(' msg=')
       end
 
@@ -87,7 +93,8 @@ module TS3API
 
     def disconnect
       logout
-      socket.close
+      connection.close
+      @reader.stop
       TS3API.log 'Connection to query server closed'
     end
   end

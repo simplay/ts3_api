@@ -10,6 +10,7 @@ module TS3API
       "No TS3 server with IP `#{ip}` on port `#{port}` running."
     end
   end
+
   class Server
     attr_reader :ip, 
                 :port,
@@ -19,6 +20,37 @@ module TS3API
     DEFAULT_QUERY_PORT = 10011
     DEFAULT_SID = "1".freeze
 
+    def self.instance(*args)
+      @instance ||= send(:new, *args)
+    end
+
+    # connect and login to the server
+    def self.start
+      instance.connect
+      instance.login
+    end
+
+    # logout and disconnect from the server and
+    # destroy the state of the server singleton
+    def self.stop
+      instance.disconnect
+      instance.destroy
+    end
+
+    def self.execute(command, params = {})
+      instance.execute(command, params)
+    end
+
+    def self.responses
+      instance.server_responses
+    end
+
+    def self.info
+      execute('serverinfo')
+    end
+
+    private_class_method :new
+
     # @param ip [String] IP address of the server.
     #   By default "localhost".
     # @param port [Integer] port where the query admin
@@ -27,6 +59,10 @@ module TS3API
       @ip   = ip
       @port = port
       @server_responses = []
+    end
+
+    def destroy
+      @instance = nil
     end
 
     def connect
@@ -55,10 +91,6 @@ module TS3API
       use(sid: sid) if sid
       @reader.run
       TS3API.log 'Logged in to query server'
-    end
-
-    def serverinfo
-      execute('serverinfo')
     end
 
     # @param sid [String] the server id, usually equals "1"

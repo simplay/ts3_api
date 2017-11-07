@@ -1,5 +1,4 @@
 require 'socket'
-
 module TS3API
   class Connection
     attr_reader :ip, 

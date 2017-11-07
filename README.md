@@ -27,11 +27,13 @@ See `.env.example` for further information.
 ### Establish a connection
 
 ```rb
-server = Server.new
-server.connect
-server.login
-# do something
-server.disconnect
+Server.start
+# Run some code
+Server.execute('serverinfo')
+Server.responses.each do |response|
+  puts response.inspect
+end
+Server.stop
 ```
 ## Development
 

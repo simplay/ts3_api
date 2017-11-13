@@ -11,6 +11,8 @@ require "ts3_api/decoder"
 require "ts3_api/response"
 require "ts3_api/reader"
 
+require "ts3_api/commands/client"
+
 module TS3API
   def self.root
     File.dirname __dir__

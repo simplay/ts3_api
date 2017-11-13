@@ -1,17 +1,7 @@
 module TS3API
   class Client
     def self.all
-      options = %w(
-        -uid 
-        -away 
-        -voice 
-        -times 
-        -groups 
-        -info 
-        -icon 
-        -country
-      )
-      response = Server.execute("clientlist #{options.join(' ')}")
+      response = ClientList.new.execute
       response.attributes.map do |client_attributes|
         new(client_attributes)
       end
@@ -19,26 +9,23 @@ module TS3API
 
     # Example
     #   kick client with clid 5
-    #   Client.kick_from_server(["5"])
+    #   Client.kick_from_server("5")
     #   
-    # @param client_ids [Array<String>] client ids
+    # @param client_ids [String, Array<String>] client ids
     def self.kick_from_server(client_ids, reason_msg = "")
-      clids = client_ids.map do |client_id|
-        "clid=#{client_id}"
-      end
-      kick_command = "clientkick #{clids.join('|')}"
-
-      params = { 
-        reasonid: "5",
-        reasonmsg: Encoder.new(reason_msg).encode
-      }
-      Server.execute(kick_command, params)
+      ClientKick.new(
+        ids: Array(client_ids), 
+        msg: reason_msg
+      ).execute
     end
 
-    # Client.poke("2", "Hey you")
-    def self.poke(client_id, msg = "")
-      encoded_msg = Encoder.new(msg).encode
-      Server.execute("clientpoke clid=#{client_id} msg=#{encoded_msg}")
+    # Client.poke(1, "Hey you")
+    # @param client_ids [String, Integer, Array<String,Integer>]
+    def self.poke(client_ids, msg = "")
+      ClientPoke.new(
+        ids: Array(client_ids).map(&:to_s), 
+        msg: msg
+      ).execute
     end
 
     attr_reader :id,

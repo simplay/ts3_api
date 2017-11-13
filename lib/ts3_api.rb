@@ -12,7 +12,12 @@ require "ts3_api/encoder"
 require "ts3_api/response"
 require "ts3_api/reader"
 
-require "ts3_api/commands/client"
+require "ts3_api/resources/client"
+
+require "ts3_api/commands/command"
+require "ts3_api/commands/client_list"
+require "ts3_api/commands/client_kick"
+require "ts3_api/commands/client_poke"
 
 module TS3API
   def self.root

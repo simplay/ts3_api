@@ -14,12 +14,14 @@ require "ts3_api/reader"
 
 require "ts3_api/resources/client"
 require "ts3_api/resources/channel"
+require "ts3_api/resources/ban"
 
 require "ts3_api/commands/command"
 require "ts3_api/commands/client_list"
 require "ts3_api/commands/client_kick"
 require "ts3_api/commands/client_poke"
 require "ts3_api/commands/channel_list"
+require "ts3_api/commands/ban_list"
 
 module TS3API
   def self.root
